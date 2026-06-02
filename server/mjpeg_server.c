@@ -72,22 +72,20 @@ static void serve_stream(int cfd) {
     if (writeall(cfd, hdr, strlen(hdr)) < 0) return;
 
     time_t last_sec = 0; long last_nsec = -1;
-    time_t last_send = 0;
+    time_t last_activity = 0;
     char part[256];
     for (;;) {
         struct stat st;
         int have = (stat(JPATH, &st) == 0);
         int fresh = have && (st.st_mtim.tv_sec != last_sec || st.st_mtim.tv_nsec != last_nsec);
         time_t now = time(NULL);
-        /* Send when there's a NEW frame (nanosecond mtime, so we catch every one),
-         * or at least once a second as a heartbeat. The heartbeat keeps viewers
-         * warm AND lets writeall() detect a disconnected client while the robot is
-         * docked (no new frames) — otherwise idle connections would never exit. */
-        if (have && (fresh || now - last_send >= 1)) {
+        /* Send a NEW frame (nanosecond mtime, so we catch every one), or refresh the
+         * current frame at least once a second. */
+        if (have && (fresh || now - last_activity >= 1)) {
             unsigned char *buf; size_t len;
             if (read_jpeg(&buf, &len) == 0) {
                 last_sec = st.st_mtim.tv_sec; last_nsec = st.st_mtim.tv_nsec;
-                last_send = now;
+                last_activity = now;
                 int hn = snprintf(part, sizeof part,
                     "--frame\r\nContent-Type: image/jpeg\r\nContent-Length: %zu\r\n\r\n", len);
                 if (writeall(cfd, part, (size_t)hn) < 0) { free(buf); return; }
@@ -95,6 +93,13 @@ static void serve_stream(int cfd) {
                 if (writeall(cfd, "\r\n", 2) < 0) { free(buf); return; }
                 free(buf);
             }
+        } else if (now - last_activity >= 1) {
+            /* No frame to send (e.g. fresh boot, never navigated -> /tmp/cam.jpg
+             * doesn't exist yet). Send a harmless inter-part keep-alive so writeall()
+             * still detects a disconnected client and this child exits instead of
+             * looping forever. MJPEG parsers skip whitespace between parts. */
+            if (writeall(cfd, "\r\n", 2) < 0) return;
+            last_activity = now;
         }
         usleep(15 * 1000); /* ~66 Hz poll; actual rate bound by frame writes */
     }
