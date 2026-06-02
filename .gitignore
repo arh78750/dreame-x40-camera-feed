@@ -32,3 +32,6 @@ patch/cave.o
 Thumbs.db
 __pycache__/
 *.pyc
+
+# === Local-only working tree (firmware, toolchain, backups, decompiled, key) ===
+_local/
