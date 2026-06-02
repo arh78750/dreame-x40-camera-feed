@@ -1,0 +1,19 @@
+dreame-x40-camera-feed
+Copyright 2026 The dreame-x40-camera-feed contributors
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+---
+
+This project interoperates with, but does NOT include or redistribute, any
+proprietary Dreame firmware. The reverse-engineering notes in docs/FINDINGS.md
+describe observed behavior, memory offsets, and data structures for the purpose
+of interoperability. No decompiled source code or firmware binaries from Dreame
+are distributed here.
+
+To use the patcher you must supply your own `node_camera_ai.so`, extracted from
+your own device. The resulting patched binary is a derivative of your device's
+firmware and must remain on your own device.
+
+"Dreame" and "Valetudo" are the trademarks/projects of their respective owners
+and are referenced here only for identification and interoperability.

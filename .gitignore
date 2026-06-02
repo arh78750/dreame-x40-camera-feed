@@ -1,0 +1,34 @@
+# === Secrets — NEVER commit ===
+*.key
+*.pem
+*_rsa
+*_ed25519
+valetudo.key
+
+# === Dreame proprietary firmware (NOT ours to redistribute) ===
+# Users supply their own, pulled from their own robot.
+node_camera_ai.so
+*.stock.so
+r2416.conf
+*.fw
+
+# === Derivative of firmware (the patched binary you build locally) ===
+patch/*.patched.so
+*.patched.so
+
+# === Decompiler output (derivative of copyrighted firmware) ===
+# Keep tools/ghidra/*.java (our scripts), never the decompiled .c output.
+ghidra-out/
+decomp/
+*.decomp.c
+
+# === Build artifacts ===
+server/mjpeg_server
+patch/cave.o
+*.o
+
+# === OS / editor noise ===
+.DS_Store
+Thumbs.db
+__pycache__/
+*.pyc
