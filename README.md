@@ -1,3 +1,5 @@
+# CLAUDE CODE was heavily used in the creation of this project, tred carefully.
+
 # Dreame X40 Ultra — local camera feed (no cloud)
 
 Stream the front (RGB obstacle) camera of a **rooted, [Valetudo](https://valetudo.cloud)-running
